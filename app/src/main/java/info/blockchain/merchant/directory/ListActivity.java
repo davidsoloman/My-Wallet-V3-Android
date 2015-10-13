@@ -2,12 +2,12 @@ package info.blockchain.merchant.directory;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -180,44 +181,72 @@ public class ListActivity extends ActionBarActivity {
             	
             	final BTCBusiness b = businesses.get(position);
 
-     			AlertDialog.Builder alert = new AlertDialog.Builder(ListActivity.this);
-                alert.setTitle(R.string.merchant_info);
-                alert.setPositiveButton(R.string.directions,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface arg0, int arg1) {
-                     			Intent intent = new Intent(Intent.ACTION_VIEW);
-                     			// https://maps.google.com/?saddr=34.052222,-118.243611&daddr=37.322778,-122.031944
-                     			intent.setData(Uri.parse("https://maps.google.com/?saddr=" +
-                     					strULat + "," + strULon +
-                     					"&daddr=" + b.lat + "," + b.lon
-                     					));
-                     			startActivity(intent);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        Looper.prepare();
+
+                        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(ListActivity.this);
+                        LayoutInflater inflater = ListActivity.this.getLayoutInflater();
+                        View dialogView = inflater.inflate(R.layout.fragment_merchant_action, null);
+                        dialogBuilder.setView(dialogView);
+
+                        final AlertDialog alertDialog = dialogBuilder.create();
+                        alertDialog.setCanceledOnTouchOutside(false);
+
+                        TextView merchantCallTv = (TextView) dialogView.findViewById(R.id.merchant_call);
+                        merchantCallTv.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                Intent intent = new Intent(Intent.ACTION_DIAL);
+                                intent.setData(Uri.parse("tel:" + b.tel));
+                                startActivity(intent);
+
+                                if (alertDialog != null && alertDialog.isShowing()) {
+                                    alertDialog.cancel();
+                                }
                             }
                         });
-                if(b.tel != null) {
-                    alert.setNeutralButton(R.string.call,
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface arg0, int arg1) {
-                                	Intent intent = new Intent(Intent.ACTION_DIAL);
-                                	intent.setData(Uri.parse("tel:" +b.tel));
-                                	startActivity(intent);
-                                }
-                            });
-                }
-                /*
-                if(markerValues.get(marker.getId()).web != null) {
-                    alert.setNegativeButton("Web",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface arg0, int arg1) {
-                         			Intent intent = new Intent(Intent.ACTION_VIEW);
-                         			intent.setData(Uri.parse(markerValues.get(marker.getId()).web));
-                         			startActivity(intent);
-                                }
-                            });
-                }
-                */
-                alert.show();
 
+                        TextView merchantDirectionsTv = (TextView) dialogView.findViewById(R.id.merchant_directions);
+                        merchantDirectionsTv.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(Intent.ACTION_VIEW);
+                                // https://maps.google.com/?saddr=34.052222,-118.243611&daddr=37.322778,-122.031944
+                                intent.setData(Uri.parse("https://maps.google.com/?saddr=" +
+                                                strULat + "," + strULon +
+                                                "&daddr=" + b.lat + "," + b.lon
+                                ));
+                                startActivity(intent);
+
+                                if (alertDialog != null && alertDialog.isShowing()) {
+                                    alertDialog.cancel();
+                                }
+                            }
+                        });
+
+                        LinearLayout merchantDownTv = (LinearLayout) dialogView.findViewById(R.id.merchant_thumb_down);
+                        merchantDownTv.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+
+
+                                if (alertDialog != null && alertDialog.isShowing()) {
+                                    alertDialog.cancel();
+                                }
+                            }
+                        });
+
+                        alertDialog.show();
+
+                        Looper.loop();
+
+                    }
+                }).start();
             }
         });
 
