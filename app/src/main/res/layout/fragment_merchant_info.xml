@@ -9,18 +9,35 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_marginTop="24dp"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
         android:layout_marginBottom="16dp">
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
                 android:layout_height="match_parent"
                 android:text="@string/merchant_info"
                 android:textColor="@color/primary_text_default_material_light"
                 android:textSize="24sp"/>
+
+        <LinearLayout
+            android:id="@+id/merchant_thumb_down"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_thumbs_up_down_grey600_36dp"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -57,24 +74,6 @@
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
             android:textColor="@color/blockchain_blue"/>
-
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:visibility="gone"
-        android:id="@+id/merchant_thumb_down"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center">
-
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_thumb_down_grey600_24dp"/>
-
 
     </LinearLayout>
 

@@ -1,7 +1,9 @@
 package info.blockchain.merchant.directory;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.location.Location;
@@ -37,6 +39,13 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONObject;
+
+import java.io.BufferedOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -288,7 +297,7 @@ public class MapActivity extends ActionBarActivity implements LocationListener	{
 
                 LatLng latLng = marker.getPosition();
                                 
-                BTCBusiness b = markerValues.get(marker.getId());
+                final BTCBusiness b = markerValues.get(marker.getId());
 
                 //
                 // launch via intent: waze://?ll=<lat>,<lon>&navigate=yes
@@ -363,6 +372,33 @@ public class MapActivity extends ActionBarActivity implements LocationListener	{
      			else {
          			map.moveCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), map.getCameraPosition().zoom));
      			}
+
+                LinearLayout merchantDownTv = (LinearLayout) findViewById(R.id.merchant_thumb_down);
+                merchantDownTv.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        AlertDialog.Builder alert = new AlertDialog.Builder(MapActivity.this);
+                        alert.setTitle(R.string.flag_merchant);
+                        alert.setMessage(R.string.flag_merchant_confirm);
+                        alert.setPositiveButton(R.string.yes,
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface arg0, int arg1) {
+                                        flagMerchant(b,true);
+                                        arg0.dismiss();
+                                    }
+                                });
+                        alert.setNegativeButton(R.string.no,
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface arg0, int arg1) {
+                                        flagMerchant(b,false);
+                                        arg0.dismiss();
+                                    }
+                                });
+                        alert.show();
+
+                    }
+                });
 
             	return true;
             }
@@ -806,5 +842,62 @@ public class MapActivity extends ActionBarActivity implements LocationListener	{
     @Override
     public void onUserLeaveHint() {
         AppUtil.getInstance(this).setInBackground(true);
+    }
+
+    private void flagMerchant(final BTCBusiness b, final boolean acceptsBitcoin){
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                Looper.prepare();
+
+                InputStream is = null;
+                OutputStream os = null;
+
+                URL url = null;
+                try {
+
+                    url = new URL("https://merchant-directory.blockchain.info/api/report");
+                    JSONObject json = new JSONObject();
+                    json.put("merchantId", b.id);
+                    json.put("acceptsBitcoin", acceptsBitcoin);
+                    String message = json.toString();
+
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+                    try {
+                        conn.setReadTimeout(60000);
+                        conn.setConnectTimeout(60000);
+                        conn.setRequestMethod("PUT");
+                        conn.setDoInput(true);
+                        conn.setDoOutput(true);
+                        conn.setFixedLengthStreamingMode(message.getBytes().length);
+                        conn.setRequestProperty("Content-Type", "application/json");
+                        conn.setRequestProperty("X-Requested-With", "XMLHttpRequest");
+                        conn.connect();
+
+                        os = new BufferedOutputStream(conn.getOutputStream());
+                        os.write(message.getBytes());
+                        os.flush();
+
+                        if (conn.getResponseCode() == 200)
+                            ToastCustom.makeText(getApplicationContext(), "Successfully submitted", ToastCustom.LENGTH_LONG, ToastCustom.TYPE_OK);
+//                        else
+//                            ToastCustom.makeText(getApplicationContext(), "Error: " + IOUtils.toString(conn.getErrorStream(), "UTF-8"), ToastCustom.LENGTH_LONG, ToastCustom.TYPE_ERROR);
+
+                    } finally {
+                        if (os != null) os.close();
+                        if (is != null) is.close();
+                        conn.disconnect();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                Looper.loop();
+
+            }
+        }).start();
     }
 }
