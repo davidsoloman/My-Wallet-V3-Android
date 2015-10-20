@@ -129,14 +129,16 @@ public class CreateWalletFragment extends Fragment {
 
                     private void setProgress(final int pwStrengthLevel, final int scorePerc) {
 
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                passStrengthBar.setProgress(scorePerc);
-                                passStrengthBar.setProgressDrawable(ContextCompat.getDrawable(getActivity(), strengthColors[pwStrengthLevel]));
-                                passStrengthVerdict.setText(getResources().getString(strengthVerdicts[pwStrengthLevel]));
-                            }
-                        });
+                        if(getActivity()!=null) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    passStrengthBar.setProgress(scorePerc);
+                                    passStrengthBar.setProgressDrawable(ContextCompat.getDrawable(getActivity(), strengthColors[pwStrengthLevel]));
+                                    passStrengthVerdict.setText(getResources().getString(strengthVerdicts[pwStrengthLevel]));
+                                }
+                            });
+                        }
                     }
 
                 }, DELAY);
@@ -214,11 +216,13 @@ public class CreateWalletFragment extends Fragment {
 
     private void setEntropyMeterVisible(final int visible){
 
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                entropyMeter.setVisibility(visible);
-            }
-        });
+        if(getActivity()!=null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    entropyMeter.setVisibility(visible);
+                }
+            });
+        }
     }
 }

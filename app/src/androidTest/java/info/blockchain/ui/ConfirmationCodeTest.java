@@ -86,7 +86,7 @@ public class ConfirmationCodeTest extends ActivityInstrumentationTestCase2<MainA
         solo.enterText((EditText) solo.getView(R.id.confirmBox3), "A");
         solo.enterText((EditText) solo.getView(R.id.confirmBox4), "A");
 
-        TestCase.assertTrue(solo.waitForText("Invalid Response Email Verification Code Incorrect"));//message generated server side
+        TestCase.assertTrue(solo.waitForText(getActivity().getString(R.string.confirmation_code_error)));
     }
 
     public void testC_ResendEmail() throws AssertionError, IOException, MnemonicException.MnemonicLengthException {

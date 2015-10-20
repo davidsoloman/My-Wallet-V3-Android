@@ -16,6 +16,7 @@ import java.text.DecimalFormat;
 
 import info.blockchain.ui.util.UiUtil;
 import info.blockchain.wallet.MainActivity;
+import info.blockchain.wallet.util.AccountsUtil;
 import info.blockchain.wallet.util.ExchangeRateFactory;
 import info.blockchain.wallet.util.MonetaryUtil;
 import info.blockchain.wallet.util.PrefsUtil;
@@ -57,7 +58,6 @@ public class BalanceScreenTest extends ActivityInstrumentationTestCase2<MainActi
         if(txList.getChildCount()>0) {
 
             TextView balance = (TextView) solo.getView(R.id.balance1);
-            String btc = balance.getText().toString();
 
             //Set default fiat, btc
             PrefsUtil.getInstance(solo.getCurrentActivity()).setValue(PrefsUtil.KEY_SELECTED_FIAT, PrefsUtil.DEFAULT_CURRENCY);
@@ -65,6 +65,14 @@ public class BalanceScreenTest extends ActivityInstrumentationTestCase2<MainActi
 
             String strFiat = PrefsUtil.getInstance(solo.getCurrentActivity()).getValue(PrefsUtil.KEY_SELECTED_FIAT, PrefsUtil.DEFAULT_CURRENCY);
             double btc_fx = ExchangeRateFactory.getInstance(solo.getCurrentActivity()).getLastPrice(strFiat);
+
+            while(!balance.getText().toString().equals(getActivity().getString(R.string.show_balance)))
+                solo.clickOnView(balance);
+
+            solo.clickOnView(balance);
+
+            //Now we are on btc
+            String btc = balance.getText().toString();
             double fiat_balance = btc_fx * Double.parseDouble(btc.split(" ")[0]);
 
             solo.clickOnView(balance);
@@ -80,12 +88,14 @@ public class BalanceScreenTest extends ActivityInstrumentationTestCase2<MainActi
     public void testB_ChangeCurrencyTapTxAmount() throws AssertionError{
 
         TextView balance = (TextView)solo.getView(R.id.balance1);
-        String btc = balance.getText().toString();
 
-        while(btc.contains(getActivity().getString(R.string.show_balance))) {
-            btc = balance.getText().toString();
+        while(!balance.getText().toString().equals(getActivity().getString(R.string.show_balance)))
             solo.clickOnView(balance);
-        }
+
+        solo.clickOnView(balance);
+
+        //Now we are on fiat
+        String btc = balance.getText().toString();
 
         //Set default fiat, btc
         PrefsUtil.getInstance(solo.getCurrentActivity()).setValue(PrefsUtil.KEY_SELECTED_FIAT, PrefsUtil.DEFAULT_CURRENCY);
@@ -115,19 +125,29 @@ public class BalanceScreenTest extends ActivityInstrumentationTestCase2<MainActi
 
     public void testC_BasicUI() throws AssertionError{
 
-        Spinner mSpinner = solo.getView(Spinner.class, 0);
-        int itemCount = mSpinner.getAdapter().getCount();
-        View spinnerView = solo.getView(Spinner.class, 0);
-        txList = (RecyclerView) solo.getView(R.id.txList2);
+        int itemCount;
+        View spinnerView = null;
 
+        if (AccountsUtil.getInstance(getActivity()).getBalanceAccountMap().size() > 1) {
+            //Multiple accounts
+            Spinner mSpinner = solo.getView(Spinner.class, 0);
+            itemCount = mSpinner.getAdapter().getCount();
+            spinnerView = solo.getView(Spinner.class, 0);
+        } else {
+            //Single account - no spinner
+            itemCount = 1;
+        }
+
+        txList = (RecyclerView) solo.getView(R.id.txList2);
         for(int i = itemCount-1; i >= 0; i--){
 
-            solo.clickOnView(spinnerView);
-            solo.scrollToTop(); // I put this in here so that it always keeps the list at start
-            solo.clickOnView(solo.getView(TextView.class, i));
-            try{solo.sleep(1000);}catch (Exception e){}
-
-            if(txList.getAdapter().getItemCount()==0)continue;
+            if(spinnerView!=null) {
+                solo.clickOnView(spinnerView);
+                solo.scrollToTop();
+                solo.clickOnView(solo.getView(TextView.class, i));
+                try {solo.sleep(1000);} catch (Exception e) {}
+                if(txList.getAdapter().getItemCount()==0)continue;
+            }
 
             float actionBarHeight = toPx(56);
             float headerHeight = toPx(72);

@@ -7,9 +7,9 @@ import com.robotium.solo.Solo;
 
 import junit.framework.TestCase;
 
-import info.blockchain.ui.util.UiUtil;
 import info.blockchain.wallet.LandingActivity;
 import info.blockchain.wallet.PinEntryActivity;
+import info.blockchain.wallet.util.AppUtil;
 import piuk.blockchain.android.R;
 
 public class PairingTest extends ActivityInstrumentationTestCase2<LandingActivity> {
@@ -49,6 +49,8 @@ public class PairingTest extends ActivityInstrumentationTestCase2<LandingActivit
 
         //Enter details
         String validUID = solo.getString(R.string.qa_test_guid_v3);
+        if(AppUtil.getInstance(getActivity()).isLegacy())
+            validUID = solo.getString(R.string.qa_test_guid_v2);
         solo.enterText(walletIDView, validUID);
 
         //Complete
@@ -83,6 +85,8 @@ public class PairingTest extends ActivityInstrumentationTestCase2<LandingActivit
 
         //Enter details
         String validUID = solo.getString(R.string.qa_test_guid_v3);
+        if(AppUtil.getInstance(getActivity()).isLegacy())
+            validUID = solo.getString(R.string.qa_test_guid_v2);
         String invalidpw = "asdf";
         solo.enterText(walletIDView, validUID);
         solo.enterText(walletPasswordView, invalidpw);
@@ -96,24 +100,26 @@ public class PairingTest extends ActivityInstrumentationTestCase2<LandingActivit
 
     public void testPairingV3Success()  throws AssertionError{
 
-        //Clear text fields
-        solo.clearEditText(walletIDView);
-        solo.clearEditText(walletPasswordView);
+        if(!AppUtil.getInstance(getActivity()).isLegacy()) {
+            //Clear text fields
+            solo.clearEditText(walletIDView);
+            solo.clearEditText(walletPasswordView);
 
-        //Enter details
-        String validUID = solo.getString(R.string.qa_test_guid_v3);
-        String validpw = solo.getString(R.string.qa_test_pw_v3);
-        solo.enterText(walletIDView, validUID);
-        solo.enterText(walletPasswordView, validpw);
+            //Enter details
+            String validUID = solo.getString(R.string.qa_test_guid_v3);
+            String validpw = solo.getString(R.string.qa_test_pw_v3);
+            solo.enterText(walletIDView, validUID);
+            solo.enterText(walletPasswordView, validpw);
 
-        //Complete
-        solo.clickOnView(solo.getView(R.id.command_next));
+            //Complete
+            solo.clickOnView(solo.getView(R.id.command_next));
 
-        //Test result
-        TestCase.assertEquals(true, solo.waitForActivity(PinEntryActivity.class));
+            //Test result
+            TestCase.assertEquals(true, solo.waitForActivity(PinEntryActivity.class));
 
-        UiUtil.getInstance(getActivity()).enterPin(solo, solo.getString(R.string.qa_test_pin1));
-        UiUtil.getInstance(getActivity()).enterPin(solo, solo.getString(R.string.qa_test_pin1));
+            UiUtil.getInstance(getActivity()).enterPin(solo, solo.getString(R.string.qa_test_pin1));
+            UiUtil.getInstance(getActivity()).enterPin(solo, solo.getString(R.string.qa_test_pin1));
+        }
     }
 
     public void testPairingV2Success()  throws AssertionError{
