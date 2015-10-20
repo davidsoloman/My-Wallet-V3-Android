@@ -19,16 +19,16 @@ public class AllTests extends ActivityInstrumentationTestCase2<Activity> {
         TestSuite t = new TestSuite();
 
         //Test creating a wallet
-        t.addTestSuite(ClearWalletData.class);
-        t.addTestSuite(CreateAWalletTest.class);
-
-        //Test email confirmation
-        t.addTestSuite(ClearWalletData.class);
-        t.addTestSuite(ConfirmationCodeTest.class);
-
-        //Test pairing
-        t.addTestSuite(ClearWalletData.class);
-        t.addTestSuite(PairingTest.class);
+//        t.addTestSuite(ClearWalletData.class);
+//        t.addTestSuite(CreateAWalletTest.class);
+//
+//        //Test email confirmation
+//        t.addTestSuite(ClearWalletData.class);
+//        t.addTestSuite(ConfirmationCodeTest.class);
+//
+//        //Test pairing
+//        t.addTestSuite(ClearWalletData.class);
+//        t.addTestSuite(PairingTest.class);
 
         //Test balance screen
         t.addTestSuite(BalanceScreenTest.class);
@@ -36,27 +36,27 @@ public class AllTests extends ActivityInstrumentationTestCase2<Activity> {
         //Test send screen
         t.addTestSuite(SendScreenTest.class);
 
-        //Test send screen
-        t.addTestSuite(ReceiveScreenTest.class);
-
-        //Test accounts screen
-        t.addTestSuite(MyAccountsScreenTest.class);
-
-        //Test settings screen
-        t.addTestSuite(SettingsScreenTest.class);
-
-        //Test support screen
-        t.addTestSuite(SupportScreenTest.class);
-
-        //Test change pin code
-        t.addTestSuite(ChangePinModalTest.class);
-
-        //Test backup wallet
-        t.addTestSuite(BackupWalletTest.class);
-
-        //Test backup wallet
-        t.addTestSuite(UnpairWalletTest.class);
-        t.addTestSuite(PairingTest.class);//repair after unpair
+//        //Test send screen
+//        t.addTestSuite(ReceiveScreenTest.class);
+//
+//        //Test accounts screen
+//        t.addTestSuite(MyAccountsScreenTest.class);
+//
+//        //Test settings screen
+//        t.addTestSuite(SettingsScreenTest.class);
+//
+//        //Test support screen
+//        t.addTestSuite(SupportScreenTest.class);
+//
+//        //Test change pin code
+//        t.addTestSuite(ChangePinModalTest.class);
+//
+//        //Test backup wallet
+//        t.addTestSuite(BackupWalletTest.class);
+//
+//        //Test backup wallet
+//        t.addTestSuite(UnpairWalletTest.class);
+//        t.addTestSuite(PairingTest.class);//repair after unpair
 
         return t;
     }

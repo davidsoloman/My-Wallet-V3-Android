@@ -7,6 +7,7 @@ import com.robotium.solo.Solo;
 
 import junit.framework.TestCase;
 
+import info.blockchain.ui.util.UiUtil;
 import info.blockchain.wallet.LandingActivity;
 import info.blockchain.wallet.PinEntryActivity;
 import info.blockchain.wallet.util.AppUtil;
