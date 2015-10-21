@@ -219,5 +219,8 @@ public class CreateAWalletTest extends ActivityInstrumentationTestCase2<MainActi
         //Test wiped
         TestCase.assertTrue(PrefsUtil.getInstance(getActivity()).getValue(PrefsUtil.KEY_GUID, "").isEmpty());
         TestCase.assertTrue(PrefsUtil.getInstance(getActivity()).getValue(PrefsUtil.KEY_PIN_IDENTIFIER, "").isEmpty());
+
+        //Give the app some time before killing it
+        try{solo.sleep(2000);}catch (Exception e){}
     }
 }

@@ -8,7 +8,12 @@ import junit.framework.TestSuite;
 
 public class AllTests extends ActivityInstrumentationTestCase2<Activity> {
 
-    public static boolean enableUserInteraction = false;//false will skip any tests that require user interaction (confirmation code input, manual pair confirm)
+    /*
+    Set this var to false to skip any tests that require user interaction:
+    - ConfirmationCodeTest: confirmation code input - entering correct confirmation code received via email will not be tested
+    - BalanceScreenTest: transaction hash opens link will be skipped - needs user interaction to close browser
+     */
+    public static boolean enableUserInteraction = false;
 
     public AllTests(Class<Activity> activityClass) {
         super(Activity.class);
@@ -19,16 +24,16 @@ public class AllTests extends ActivityInstrumentationTestCase2<Activity> {
         TestSuite t = new TestSuite();
 
         //Test creating a wallet
-//        t.addTestSuite(ClearWalletData.class);
-//        t.addTestSuite(CreateAWalletTest.class);
-//
-//        //Test email confirmation
-//        t.addTestSuite(ClearWalletData.class);
-//        t.addTestSuite(ConfirmationCodeTest.class);
-//
-//        //Test pairing
-//        t.addTestSuite(ClearWalletData.class);
-//        t.addTestSuite(PairingTest.class);
+        t.addTestSuite(ClearWalletData.class);
+        t.addTestSuite(CreateAWalletTest.class);
+
+        //Test email confirmation
+        t.addTestSuite(ClearWalletData.class);
+        t.addTestSuite(ConfirmationCodeTest.class);
+
+        //Test pairing
+        t.addTestSuite(ClearWalletData.class);
+        t.addTestSuite(PairingTest.class);
 
         //Test balance screen
         t.addTestSuite(BalanceScreenTest.class);
@@ -36,27 +41,27 @@ public class AllTests extends ActivityInstrumentationTestCase2<Activity> {
         //Test send screen
         t.addTestSuite(SendScreenTest.class);
 
-//        //Test send screen
-//        t.addTestSuite(ReceiveScreenTest.class);
-//
-//        //Test accounts screen
-//        t.addTestSuite(MyAccountsScreenTest.class);
-//
-//        //Test settings screen
-//        t.addTestSuite(SettingsScreenTest.class);
-//
-//        //Test support screen
-//        t.addTestSuite(SupportScreenTest.class);
-//
-//        //Test change pin code
-//        t.addTestSuite(ChangePinModalTest.class);
-//
-//        //Test backup wallet
-//        t.addTestSuite(BackupWalletTest.class);
-//
-//        //Test backup wallet
-//        t.addTestSuite(UnpairWalletTest.class);
-//        t.addTestSuite(PairingTest.class);//repair after unpair
+        //Test send screen
+        t.addTestSuite(ReceiveScreenTest.class);
+
+        //Test accounts screen
+        t.addTestSuite(MyAccountsScreenTest.class);
+
+        //Test settings screen
+        t.addTestSuite(SettingsScreenTest.class);
+
+        //Test support screen
+        t.addTestSuite(SupportScreenTest.class);
+
+        //Test change pin code
+        t.addTestSuite(ChangePinModalTest.class);
+
+        //Test backup wallet
+        t.addTestSuite(BackupWalletTest.class);
+
+        //Test backup wallet
+        t.addTestSuite(UnpairWalletTest.class);
+        t.addTestSuite(PairingTest.class);//repair after unpair
 
         return t;
     }
