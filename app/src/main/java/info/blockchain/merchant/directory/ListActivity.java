@@ -23,18 +23,11 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.json.JSONObject;
-
-import java.io.BufferedOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+import info.blockchain.merchant.directory.util.MerchantUtil;
 import info.blockchain.wallet.util.AppUtil;
-import info.blockchain.wallet.util.ToastCustom;
 import piuk.blockchain.android.R;
 
 public class ListActivity extends ActionBarActivity {
@@ -188,7 +181,7 @@ public class ListActivity extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
             	
-            	final BTCBusiness b = businesses.get(position);
+            	final BTCBusiness btcBusiness = businesses.get(position);
 
                 new Thread(new Runnable() {
                     @Override
@@ -211,7 +204,7 @@ public class ListActivity extends ActionBarActivity {
                             public void onClick(View v) {
 
                                 Intent intent = new Intent(Intent.ACTION_DIAL);
-                                intent.setData(Uri.parse("tel:" + b.tel));
+                                intent.setData(Uri.parse("tel:" + btcBusiness.tel));
                                 startActivity(intent);
 
                                 if (alertDialog != null && alertDialog.isShowing()) {
@@ -228,7 +221,7 @@ public class ListActivity extends ActionBarActivity {
                                 // https://maps.google.com/?saddr=34.052222,-118.243611&daddr=37.322778,-122.031944
                                 intent.setData(Uri.parse("https://maps.google.com/?saddr=" +
                                                 strULat + "," + strULon +
-                                                "&daddr=" + b.lat + "," + b.lon
+                                                "&daddr=" + btcBusiness.lat + "," + btcBusiness.lon
                                 ));
                                 startActivity(intent);
 
@@ -249,14 +242,14 @@ public class ListActivity extends ActionBarActivity {
                                 alert.setPositiveButton(R.string.yes,
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface arg0, int arg1) {
-                                                flagMerchant(b,true);
+                                                MerchantUtil.getInstance(getApplicationContext()).flagMerchant(btcBusiness, true);
                                                 arg0.dismiss();
                                             }
                                         });
                                 alert.setNegativeButton(R.string.no,
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface arg0, int arg1) {
-                                                flagMerchant(b,false);
+                                                MerchantUtil.getInstance(getApplicationContext()).flagMerchant(btcBusiness, true);
                                                 arg0.dismiss();
                                             }
                                         });
@@ -441,62 +434,5 @@ public class ListActivity extends ActionBarActivity {
     @Override
     public void onUserLeaveHint() {
         AppUtil.getInstance(this).setInBackground(true);
-    }
-
-    private void flagMerchant(final BTCBusiness b, final boolean acceptsBitcoin){
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                Looper.prepare();
-
-                InputStream is = null;
-                OutputStream os = null;
-
-                URL url = null;
-                try {
-
-                    url = new URL("https://merchant-directory.blockchain.info/api/report");
-                    JSONObject json = new JSONObject();
-                    json.put("merchantId", b.id);
-                    json.put("acceptsBitcoin", acceptsBitcoin);
-                    String message = json.toString();
-
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-                    try {
-                        conn.setReadTimeout(60000);
-                        conn.setConnectTimeout(60000);
-                        conn.setRequestMethod("PUT");
-                        conn.setDoInput(true);
-                        conn.setDoOutput(true);
-                        conn.setFixedLengthStreamingMode(message.getBytes().length);
-                        conn.setRequestProperty("Content-Type", "application/json");
-                        conn.setRequestProperty("X-Requested-With", "XMLHttpRequest");
-                        conn.connect();
-
-                        os = new BufferedOutputStream(conn.getOutputStream());
-                        os.write(message.getBytes());
-                        os.flush();
-
-                        if (conn.getResponseCode() == 200)
-                            ToastCustom.makeText(getApplicationContext(), "Successfully submitted", ToastCustom.LENGTH_LONG, ToastCustom.TYPE_OK);
-                        else
-                            ToastCustom.makeText(getApplicationContext(), "Error: Please try again later.", ToastCustom.LENGTH_LONG, ToastCustom.TYPE_ERROR);
-
-                    } finally {
-                        if (os != null) os.close();
-                        if (is != null) is.close();
-                        conn.disconnect();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                Looper.loop();
-
-            }
-        }).start();
     }
 }
