@@ -883,8 +883,8 @@ public class MapActivity extends ActionBarActivity implements LocationListener	{
 
                         if (conn.getResponseCode() == 200)
                             ToastCustom.makeText(getApplicationContext(), "Successfully submitted", ToastCustom.LENGTH_LONG, ToastCustom.TYPE_OK);
-//                        else
-//                            ToastCustom.makeText(getApplicationContext(), "Error: " + IOUtils.toString(conn.getErrorStream(), "UTF-8"), ToastCustom.LENGTH_LONG, ToastCustom.TYPE_ERROR);
+                        else
+                            ToastCustom.makeText(getApplicationContext(), "Error: Please try again later.", ToastCustom.LENGTH_LONG, ToastCustom.TYPE_ERROR);
 
                     } finally {
                         if (os != null) os.close();
