@@ -24,13 +24,13 @@ public class AllTests extends ActivityInstrumentationTestCase2<Activity> {
 
         TestSuite t = new TestSuite();
 
-//        //Test creating a wallet
-//        t.addTestSuite(ClearWalletData.class);
-//        t.addTestSuite(CreateAWalletTest.class);
-//
-//        //Test email confirmation
-//        t.addTestSuite(ClearWalletData.class);
-//        t.addTestSuite(ConfirmationCodeTest.class);
+        //Test creating a wallet
+        t.addTestSuite(ClearWalletData.class);
+        t.addTestSuite(CreateAWalletTest.class);
+
+        //Test email confirmation
+        t.addTestSuite(ClearWalletData.class);
+        t.addTestSuite(ConfirmationCodeTest.class);
 
         //Test pairing
         t.addTestSuite(ClearWalletData.class);
