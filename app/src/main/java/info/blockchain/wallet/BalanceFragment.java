@@ -272,6 +272,8 @@ public class BalanceFragment extends Fragment {
 
         AccountsUtil.getInstance(getActivity()).initAccountMaps();
 
+        AppUtil.getInstance(getActivity()).setAllowLockTimer(true);
+
         MainActivity.currentFragment = this;
 
         comm.resetNavigationDrawer();
@@ -766,11 +768,9 @@ public class BalanceFragment extends Fragment {
             int top = tvBalance1.getPaddingTop();
             int right = tvBalance1.getPaddingRight();
             int left = tvBalance1.getPaddingLeft();
-            int textAlignment = tvBalance1.getTextAlignment();
             tvBalance1.setBackgroundResource(R.drawable.container_blue_shadow);
             tvBalance1.setPadding(left, top, right, bottom);
             tvBalance1.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
-            tvBalance1.setTextAlignment(textAlignment);
         }
 
         tvBalance1.setOnTouchListener(new OnTouchListener() {
@@ -1073,6 +1073,7 @@ public class BalanceFragment extends Fragment {
 
                         if (event.getAction() == MotionEvent.ACTION_UP && !strTx.isEmpty()) {
                             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://blockchain.info/tx/" + strTx));
+                            AppUtil.getInstance(getActivity()).setAllowLockTimer(false);
                             startActivity(browserIntent);
                         }
                         return true;
