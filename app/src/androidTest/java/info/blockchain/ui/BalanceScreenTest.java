@@ -173,7 +173,7 @@ public class BalanceScreenTest extends ActivityInstrumentationTestCase2<MainActi
         }
 
         //Test hash opens link
-        if(AllTests.enableUserInteraction && txList.getAdapter().getItemCount()>0) {
+        if(AllTests.requireUserInteraction && txList.getAdapter().getItemCount()>0) {
             solo.clickOnView(txList.getChildAt(0));
             solo.clickOnView(solo.getView(R.id.tx_hash));
             try{solo.sleep(1000);}catch (Exception e){}

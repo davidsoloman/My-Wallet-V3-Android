@@ -12,8 +12,9 @@ public class AllTests extends ActivityInstrumentationTestCase2<Activity> {
     Set this var to false to skip any tests that require user interaction:
     - ConfirmationCodeTest: confirmation code input - entering correct confirmation code received via email will not be tested
     - BalanceScreenTest: transaction hash opens link will be skipped - needs user interaction to close browser
+    Note: if false, wallet might not pair if login needs to be approved
      */
-    public static boolean enableUserInteraction = false;
+    public static boolean requireUserInteraction = true;
 
     public AllTests(Class<Activity> activityClass) {
         super(Activity.class);
@@ -23,13 +24,13 @@ public class AllTests extends ActivityInstrumentationTestCase2<Activity> {
 
         TestSuite t = new TestSuite();
 
-        //Test creating a wallet
-        t.addTestSuite(ClearWalletData.class);
-        t.addTestSuite(CreateAWalletTest.class);
-
-        //Test email confirmation
-        t.addTestSuite(ClearWalletData.class);
-        t.addTestSuite(ConfirmationCodeTest.class);
+//        //Test creating a wallet
+//        t.addTestSuite(ClearWalletData.class);
+//        t.addTestSuite(CreateAWalletTest.class);
+//
+//        //Test email confirmation
+//        t.addTestSuite(ClearWalletData.class);
+//        t.addTestSuite(ConfirmationCodeTest.class);
 
         //Test pairing
         t.addTestSuite(ClearWalletData.class);

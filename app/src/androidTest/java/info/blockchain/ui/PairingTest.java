@@ -27,6 +27,8 @@ public class PairingTest extends ActivityInstrumentationTestCase2<LandingActivit
     @Override
     public void setUp() throws Exception {
         solo = new Solo(getInstrumentation(), getActivity());
+        //Ensure tests run on HD mode
+        AppUtil.getInstance(getActivity()).setLegacy(false);
 
         //Navigate to manual pairing
         solo.clickOnView(solo.getView(R.id.login));
@@ -96,7 +98,7 @@ public class PairingTest extends ActivityInstrumentationTestCase2<LandingActivit
         solo.clickOnView(solo.getView(R.id.command_next));
 
         //Test result
-        TestCase.assertEquals(true, solo.waitForText(solo.getCurrentActivity().getString(R.string.pairing_failed)));
+        TestCase.assertEquals(true, solo.waitForText(solo.getCurrentActivity().getString(R.string.check_email_to_auth_login)) || solo.waitForText(solo.getCurrentActivity().getString(R.string.pairing_failed)));
     }
 
     public void testPairingV3Success()  throws AssertionError{
@@ -115,11 +117,29 @@ public class PairingTest extends ActivityInstrumentationTestCase2<LandingActivit
             //Complete
             solo.clickOnView(solo.getView(R.id.command_next));
 
-            //Test result
-            TestCase.assertEquals(true, solo.waitForActivity(PinEntryActivity.class));
+            try{solo.sleep(4000);}catch (Exception e){}
+            if(solo.waitForText(solo.getCurrentActivity().getString(R.string.check_email_to_auth_login))){
 
-            UiUtil.getInstance(getActivity()).enterPin(solo, solo.getString(R.string.qa_test_pin1));
-            UiUtil.getInstance(getActivity()).enterPin(solo, solo.getString(R.string.qa_test_pin1));
+                if(!AllTests.requireUserInteraction)return;
+
+                //user interaction needed
+                UiUtil.getInstance(getActivity()).soundAlert();
+
+                //Test result
+                TestCase.assertEquals(true, solo.waitForActivity(PinEntryActivity.class, 30000));
+
+                UiUtil.getInstance(getActivity()).enterPin(solo, solo.getString(R.string.qa_test_pin1));
+                UiUtil.getInstance(getActivity()).enterPin(solo, solo.getString(R.string.qa_test_pin1));
+
+            }else{
+
+                //Test result
+                TestCase.assertEquals(true, solo.waitForActivity(PinEntryActivity.class));
+
+                UiUtil.getInstance(getActivity()).enterPin(solo, solo.getString(R.string.qa_test_pin1));
+                UiUtil.getInstance(getActivity()).enterPin(solo, solo.getString(R.string.qa_test_pin1));
+
+            }
         }
     }
 

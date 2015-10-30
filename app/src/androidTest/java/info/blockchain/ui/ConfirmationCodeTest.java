@@ -137,7 +137,7 @@ public class ConfirmationCodeTest extends ActivityInstrumentationTestCase2<MainA
 
     public void testF_EnterCorrectCode() throws AssertionError, IOException, MnemonicException.MnemonicLengthException {
 
-        if(AllTests.enableUserInteraction) {
+        if(AllTests.requireUserInteraction) {
 
             UiUtil.getInstance(getActivity()).enterPin(solo, solo.getString(R.string.qa_test_pin1));
 

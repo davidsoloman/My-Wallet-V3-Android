@@ -1,5 +1,6 @@
 package info.blockchain.wallet;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -83,7 +84,9 @@ public class ManualPairingFragment extends Fragment {
             progress.dismiss();
             progress = null;
         }
-        progress = new ProgressDialog(getActivity());
+
+        final Activity thisActivity = getActivity();
+        progress = new ProgressDialog(thisActivity);
         progress.setCancelable(false);
         progress.setTitle(R.string.app_name);
         progress.setMessage(getActivity().getString(R.string.pairing_wallet));
@@ -101,10 +104,10 @@ public class ManualPairingFragment extends Fragment {
                 Looper.prepare();
 
                 try {
-                    String response = PairingFactory.getInstance(getActivity()).getWalletManualPairing(guid);
+                    String response = PairingFactory.getInstance(thisActivity).getWalletManualPairing(guid);
 
                     if(response.equals(PairingFactory.KEY_AUTH_REQUIRED)){
-                        getActivity().runOnUiThread(new Runnable() {
+                        thisActivity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 progress.setCancelable(true);
@@ -115,8 +118,8 @@ public class ManualPairingFragment extends Fragment {
                     }
 
                     if(response!=null && response.equals("Authorization Required")){
-                        ToastCustom.makeText(getActivity(), getString(R.string.auth_failed), ToastCustom.LENGTH_SHORT, ToastCustom.TYPE_ERROR);
-                        AppUtil.getInstance(getActivity()).clearCredentialsAndRestart();
+                        ToastCustom.makeText(thisActivity, getString(R.string.auth_failed), ToastCustom.LENGTH_SHORT, ToastCustom.TYPE_ERROR);
+                        AppUtil.getInstance(thisActivity).clearCredentialsAndRestart();
                     }
 
                     JSONObject jsonObj = new JSONObject(response);
@@ -130,36 +133,36 @@ public class ManualPairingFragment extends Fragment {
                         }
                         catch(Exception e) {
                             e.printStackTrace();
-                            ToastCustom.makeText(getActivity(), getString(R.string.pairing_failed_decrypt_error), ToastCustom.LENGTH_SHORT, ToastCustom.TYPE_ERROR);
-                            AppUtil.getInstance(getActivity()).clearCredentialsAndRestart();
+                            ToastCustom.makeText(thisActivity, getString(R.string.pairing_failed_decrypt_error), ToastCustom.LENGTH_SHORT, ToastCustom.TYPE_ERROR);
+                            AppUtil.getInstance(thisActivity).clearCredentialsAndRestart();
                         }
 
                         if(decrypted_payload != null) {
                             JSONObject payloadObj = new JSONObject(decrypted_payload);
                             if(payloadObj != null && payloadObj.has("sharedKey")) {
-                                PrefsUtil.getInstance(getActivity()).setValue(PrefsUtil.KEY_GUID, guid);
+                                PrefsUtil.getInstance(thisActivity).setValue(PrefsUtil.KEY_GUID, guid);
                                 PayloadFactory.getInstance().setTempPassword(password);
-                                AppUtil.getInstance(getActivity()).setSharedKey((String)payloadObj.get("sharedKey"));
+                                AppUtil.getInstance(thisActivity).setSharedKey((String)payloadObj.get("sharedKey"));
 
-                                if(HDPayloadBridge.getInstance(getActivity()).init(password)) {
-                                    PrefsUtil.getInstance(getActivity()).setValue(PrefsUtil.KEY_EMAIL_VERIFIED, true);
+                                if(HDPayloadBridge.getInstance(thisActivity).init(password)) {
+                                    PrefsUtil.getInstance(thisActivity).setValue(PrefsUtil.KEY_EMAIL_VERIFIED, true);
                                     PayloadFactory.getInstance().setTempPassword(password);
 //                                    ToastCustom.makeText(getActivity(), getString(R.string.pairing_success), ToastCustom.LENGTH_SHORT, ToastCustom.TYPE_OK);
-                                    Intent intent = new Intent(getActivity(), PinEntryActivity.class);
+                                    Intent intent = new Intent(thisActivity, PinEntryActivity.class);
                                     intent.putExtra(PairingFactory.KEY_EXTRA_IS_PAIRING, true);
-                                    getActivity().startActivity(intent);
+                                    thisActivity.startActivity(intent);
                                 }
                                 else {
-                                    ToastCustom.makeText(getActivity(), getString(R.string.pairing_failed), ToastCustom.LENGTH_SHORT, ToastCustom.TYPE_ERROR);
-                                    AppUtil.getInstance(getActivity()).clearCredentialsAndRestart();
+                                    ToastCustom.makeText(thisActivity, getString(R.string.pairing_failed), ToastCustom.LENGTH_SHORT, ToastCustom.TYPE_ERROR);
+                                    AppUtil.getInstance(thisActivity).clearCredentialsAndRestart();
                                 }
 
                             }
 
                         }
                         else {
-                            ToastCustom.makeText(getActivity(), getString(R.string.pairing_failed), ToastCustom.LENGTH_SHORT, ToastCustom.TYPE_ERROR);
-                            AppUtil.getInstance(getActivity()).clearCredentialsAndRestart();
+                            ToastCustom.makeText(thisActivity, getString(R.string.pairing_failed), ToastCustom.LENGTH_SHORT, ToastCustom.TYPE_ERROR);
+                            AppUtil.getInstance(thisActivity).clearCredentialsAndRestart();
                         }
 
                     }
@@ -167,16 +170,16 @@ public class ManualPairingFragment extends Fragment {
                 }
                 catch(JSONException je) {
                     je.printStackTrace();
-                    if(getActivity()!=null) {
-                        ToastCustom.makeText(getActivity(), getString(R.string.pairing_failed), ToastCustom.LENGTH_SHORT, ToastCustom.TYPE_ERROR);
-                        AppUtil.getInstance(getActivity()).clearCredentialsAndRestart();
+                    if(thisActivity!=null) {
+                        ToastCustom.makeText(thisActivity, getString(R.string.pairing_failed), ToastCustom.LENGTH_SHORT, ToastCustom.TYPE_ERROR);
+                        AppUtil.getInstance(thisActivity).clearCredentialsAndRestart();
                     }
                 }
                 catch(Exception e) {
                     e.printStackTrace();
-                    if(getActivity()!=null) {
-                        ToastCustom.makeText(getActivity(), getString(R.string.pairing_failed), ToastCustom.LENGTH_SHORT, ToastCustom.TYPE_ERROR);
-                        AppUtil.getInstance(getActivity()).clearCredentialsAndRestart();
+                    if(thisActivity!=null) {
+                        ToastCustom.makeText(thisActivity, getString(R.string.pairing_failed), ToastCustom.LENGTH_SHORT, ToastCustom.TYPE_ERROR);
+                        AppUtil.getInstance(thisActivity).clearCredentialsAndRestart();
                     }
                 }finally {
                     if(progress != null && progress.isShowing()) {
@@ -208,25 +211,31 @@ public class ManualPairingFragment extends Fragment {
             public void run() {
 
                 while(waitinForAuth) {
-                    getActivity().runOnUiThread(new Runnable() {
 
-                        @Override
-                        public void run() {
-                            progress.setMessage(getResources().getString(R.string.check_email_to_auth_login) + " " + timer);
-                            timer--;
+                    if(getActivity()!=null) {
+
+                        getActivity().runOnUiThread(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                progress.setMessage(getResources().getString(R.string.check_email_to_auth_login) + " " + timer);
+                                timer--;
+                            }
+                        });
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
-                    });
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
 
-                    if(timer<=0){
-                        ToastCustom.makeText(getActivity(), getString(R.string.pairing_failed), ToastCustom.LENGTH_SHORT, ToastCustom.TYPE_ERROR);
+                        if (timer <= 0) {
+                            ToastCustom.makeText(getActivity(), getString(R.string.pairing_failed), ToastCustom.LENGTH_SHORT, ToastCustom.TYPE_ERROR);
+                            waitinForAuth = false;
+                            progress.cancel();
+                            AppUtil.getInstance(getActivity()).clearCredentialsAndRestart();
+                        }
+                    }else{
                         waitinForAuth = false;
-                        progress.cancel();
-                        AppUtil.getInstance(getActivity()).clearCredentialsAndRestart();
                     }
                 }
             }

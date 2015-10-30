@@ -98,6 +98,7 @@ public class SettingsScreenTest extends ActivityInstrumentationTestCase2<MainAct
 
         final String[] currencies = ExchangeRateFactory.getInstance(getActivity()).getCurrencies();
 
+        int i = 0;
         for(String currency : currencies) {
 
             if(solo.searchText(getActivity().getString(R.string.options_currency)))
@@ -129,6 +130,9 @@ public class SettingsScreenTest extends ActivityInstrumentationTestCase2<MainAct
             try{solo.sleep(500);}catch (Exception e){}
             solo.clickOnText(getActivity().getString(R.string.action_settings));
             try{solo.sleep(500);}catch (Exception e){}
+
+            i++;
+            if(i >= 5)break;
         }
     }
 

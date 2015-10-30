@@ -16,6 +16,7 @@ import info.blockchain.ui.util.UiUtil;
 import info.blockchain.wallet.MainActivity;
 import info.blockchain.wallet.PinEntryActivity;
 import info.blockchain.wallet.PolicyActivity;
+import info.blockchain.wallet.util.AppUtil;
 import info.blockchain.wallet.util.PrefsUtil;
 import piuk.blockchain.android.R;
 
@@ -34,6 +35,8 @@ public class CreateAWalletTest extends ActivityInstrumentationTestCase2<MainActi
     @Override
     public void setUp() throws Exception {
         solo = new Solo(getInstrumentation(), getActivity());
+        //Ensure tests run on HD mode
+        AppUtil.getInstance(getActivity()).setLegacy(false);
     }
 
     @Override
